@@ -1,0 +1,8 @@
+[submodule "Assets/Scripts"]
+    path = Assets/Scripts/Sililib
+    url = https://github.com/Silikiln/unity-library
+    branch = scripts
+[submodule "Assets/Editor"]
+    path = Assets/Editor/Sililib
+    url = https://github.com/Silikiln/unity-library
+    branch = editor
