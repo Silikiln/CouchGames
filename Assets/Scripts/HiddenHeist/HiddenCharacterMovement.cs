@@ -3,7 +3,6 @@ using System.Collections;
 
 public class HiddenCharacterMovement : MonoBehaviour {
 	public bool playerControlled = false;
-	public float movementSpeed = .1f;
 
 	public float movementMaxDelay = 10;
 	public float movementMinDelay = .5f;
@@ -12,35 +11,21 @@ public class HiddenCharacterMovement : MonoBehaviour {
 	private bool moving = false;
 	private float movementTimer;
 	private Coroutine randomMovement;
+	private BasicMovement movementHandler;
 
 	// Use this for initialization
 	void Start () {
 		rigidBody = GetComponent<Rigidbody2D> ();
 		movementTimer = Random.Range (movementMinDelay, movementMaxDelay);
 		GetComponent<SpriteRenderer> ().color = new Color (Random.Range (0f, 1f), Random.Range (0f, 1f), Random.Range (0f, 1f));
+
+		movementHandler = GetComponent<BasicMovement> ();
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		if (!playerControlled && !moving && (movementTimer -= Time.deltaTime) <= 0)
 			randomMovement = StartCoroutine (RandomMovement ());
-	}
-
-	void FixedUpdate() {
-		if (!playerControlled) return;
-
-		Vector2 movementDirection = Vector2.zero;
-		if (Input.GetKey (KeyCode.W))
-			movementDirection.y = 1;
-		else if (Input.GetKey (KeyCode.S))
-			movementDirection.y = -1;
-
-		if (Input.GetKey (KeyCode.A))
-			movementDirection.x = -1;
-		else if (Input.GetKey (KeyCode.D))
-			movementDirection.x = 1;
-
-		rigidBody.velocity = movementDirection.normalized * movementSpeed;
 	}
 
 	public IEnumerator RandomMovement() {
@@ -60,7 +45,7 @@ public class HiddenCharacterMovement : MonoBehaviour {
 
 		Debug.DrawLine (transform.position, targetPosition, Color.black);
 
-		Vector3 speed = offsetPosition.normalized * movementSpeed;
+		Vector3 speed = offsetPosition.normalized * movementHandler.movementSpeed;
 		float distance = offsetPosition.magnitude;
 
 		while (distance > 0) {
