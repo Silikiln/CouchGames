@@ -76,33 +76,28 @@ public class StampPlayer : MonoBehaviour {
         //value that represents the duration of each wall
         int wallDuration = 10;
         Random.InitState(System.DateTime.Now.Millisecond);
-        for (int i = 0; i < wallsToCreate; i++)
-        {
-            Debug.Log("Creating wall: " + (i + 1) + " of " + wallsToCreate);
+        for (int i = 0; i < wallsToCreate; i++){
+            //while we have not actually created a wall
             bool wallGenerated = false;
-            while (!wallGenerated)
-            {
+            while (!wallGenerated){
+                //generate a random starting point
                 Vector3 startingPoint = new Vector3(Random.Range((gameGrid.Height / -2), (gameGrid.Height/2)), 0, Random.Range((gameGrid.Width / -2), (gameGrid.Width / 2))); //is there a better way to check points on grid?
-                Debug.Log("Trying StartingPoint: " + startingPoint + " for wall Number: " + (i + 1));
                 //check if that point is already a wall
                 GameObject tempPointCheck = null;
-                if (gameGrid.TryGetGridObject(startingPoint, out tempPointCheck) && !tempPointCheck.GetComponent<StampSpace>().isWall)
-                {
-                    Debug.Log("Valid: " + startingPoint + " for wall Number: " + (i + 1));
+                if (gameGrid.TryGetGridObject(startingPoint, out tempPointCheck) && !tempPointCheck.GetComponent<StampSpace>().isWall){
+                    //create a list of directions we have already tried
                     int chosenDirection = 0;
                     List<int> directionsChecked = new List<int>();
-                    while (chosenDirection == 0)
-                    {
+                    //while we have not found a direction for our wall
+                    while (chosenDirection == 0){
+                        //generate a direction that we have not checked
                         bool failedMinWallTest = false;
                         int tempDirection = Random.Range(1, 4);
-                        if (!directionsChecked.Contains(tempDirection))
-                        {
-                            Debug.Log("Direction: " + tempDirection + " For StartingPoint: " + startingPoint + " for wall Number: " + (i + 1) + " VALID");
+                        if (!directionsChecked.Contains(tempDirection)){
                             directionsChecked.Add(tempDirection);
-                            for (int j = 0; j < wallsMinSize; j++)
-                            {
-                                if (!failedMinWallTest)
-                                {
+                            //is this direction with this startingpoint valid?
+                            for (int j = 0; j < wallsMinSize; j++){
+                                if (!failedMinWallTest){
                                     //temporarily select a gridspace in the chose direction
                                     Vector3 tempWallPoint;
                                     if (tempDirection == 1)
@@ -115,41 +110,29 @@ public class StampPlayer : MonoBehaviour {
                                         tempWallPoint = new Vector3(startingPoint.x - j, startingPoint.y, startingPoint.z); //left
                                     //ensure that we can build a wall in the temporary grid space, if not try a different direction
                                     GameObject tempMinWall = null;
-                                    if (!gameGrid.TryGetGridObject(tempWallPoint, out tempMinWall)) { 
+                                    if (!gameGrid.TryGetGridObject(tempWallPoint, out tempMinWall))
                                         failedMinWallTest = true;
-                                        Debug.Log("Testing min wall: " + (j + 1) + " of " + wallsMinSize + " in Direction: " + tempDirection + " FAILED");
-                                    } else
-                                        Debug.Log("Testing min wall: " + (j + 1) + " of " + wallsMinSize + " in Direction: " + tempDirection + " PASSED");
                                 }
                             }
                         }
                         else {
-                            //probably a better way to do this, but this ensures directions that are not valid will not be marked true.
+                            //this ensures directions that are not valid will not be marked true.
                             //for the time being, don't make this an else if or stuff breaks
                             if (directionsChecked.Count == 4) { chosenDirection = -1; }
                         }
 
+                        //if we made it this far, then we know the current direction is valid
                         if (!failedMinWallTest)
-                        {
-                            //if we made it this far, then we know the current direction is valid
                             chosenDirection = tempDirection;
-                            Debug.Log("Chosen Direcetion: " + chosenDirection);
-                        }
-                        else
-                        {
-                            Debug.Log("We failed with Direcetion: " + chosenDirection);
-                        }
-
                     }
 
-                    if(chosenDirection != 0 && chosenDirection != -1)
-                    {
+                    //if our direction was good, then we know we can actually build the wall now
+                    if(chosenDirection != 0 && chosenDirection != -1){
                         //generate the wallSize
                         int wallSize = wallsMaxSize / 2;
                         bool pickAgain = false;
                         do
                         {
-                            Debug.Log("Generating wall size...");
                             pickAgain = false;
                             wallSize = Random.Range(wallsMinSize, wallsMaxSize);
                             //if the value is in the middle always use it
@@ -159,11 +142,9 @@ public class StampPlayer : MonoBehaviour {
                                 pickAgain = true;
                         } while (pickAgain);
 
-                        Debug.Log("Wall Size to try: " + wallSize);
-
+                        //build a list of spaces that will be turned into a wall
                         List<StampSpace> wallSpaces = new List<StampSpace>();
-                        for (int w = 0; w < wallSize; w++)
-                        {
+                        for (int w = 0; w < wallSize; w++){
                             //temporarily select a gridspace in the chose direction
                             Vector3 tempWallPoint;
                             if (chosenDirection == 1)
@@ -174,19 +155,10 @@ public class StampPlayer : MonoBehaviour {
                                 tempWallPoint = new Vector3(startingPoint.x, startingPoint.y, startingPoint.z - w); //down
                             else
                                 tempWallPoint = new Vector3(startingPoint.x - w, startingPoint.y, startingPoint.z); //left
-                            Debug.Log("Getting Final wall point: " + tempWallPoint + " Of Wall: " + (i + 1));
                             //ensure that we can build a wall in the temporary grid space, if not try a different direction
                             GameObject tempMinWall = null;
                             if (gameGrid.TryGetGridObject(tempWallPoint, out tempMinWall) && !tempMinWall.GetComponent<StampSpace>().isWall)
-                            {
                                 wallSpaces.Add(tempMinWall.GetComponent<StampSpace>());
-                                Debug.Log("Wall point: " + tempWallPoint + " Of Wall: " + (i + 1) + "ADDED");
-                            }
-                            else
-                            {
-                                Debug.Log("Wall point: " + tempWallPoint + " Of Wall: " + (i + 1) + "NOT ADDED");
-                            }
-
                         }
 
                         //loop over our list of wall spaces and turn each into a wall
@@ -195,7 +167,6 @@ public class StampPlayer : MonoBehaviour {
 
                         //wall has been generated    
                         wallGenerated = true;
-                        Debug.Log("Wall: " + (i + 1) + " of " + wallsToCreate + " BUILT Final Size: " + wallSpaces.Count);
                     }
                 }
             }
