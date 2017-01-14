@@ -4,12 +4,17 @@ using System.Collections;
 public class StampSpace : MonoBehaviour {
 	private SpriteRenderer spriteRenderer;
     public bool isWall = false;
+    public GameObject owner;
+    public GameObject occupyingPlayer;
 
-	void Start() {
+    void Start() {
 		spriteRenderer = GetComponent<SpriteRenderer> ();
 	}
 
-	public void SetColor(Color color) {
+    public void SetOwner(GameObject player){if(owner == null)owner = player;}
+    public void SetOccupyingPlayer(GameObject player) { occupyingPlayer = (occupyingPlayer == null)?player:null; }
+
+    public void SetColor(Color color) {
 		if (spriteRenderer == null)
 			spriteRenderer = gameObject.GetComponent<SpriteRenderer> ();
 		spriteRenderer.color = color;

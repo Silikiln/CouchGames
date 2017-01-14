@@ -60,17 +60,31 @@ public class StampPlayer : MonoBehaviour {
 		this.y = y;
 		this.delayTimer = movementDelay;
 
+        //block to remove the currently occupying player
 		if (isGhost && currentSpaces != null)
-			foreach (StampSpace square in currentSpaces)
-				square.SetGhost (false);
+			foreach (StampSpace square in currentSpaces){
+                square.SetGhost(false);
+                square.SetOccupyingPlayer(gameObject);
+            }
+		if(!isGhost && currentSpaces != null)
+            foreach (StampSpace square in currentSpaces){
+                square.SetOccupyingPlayer(gameObject);
+            }
 
-		currentSpaces = targetSpaces;
+        //update currentSpaces to be the spaces we are moving to
+        currentSpaces = targetSpaces;
 
-		foreach (StampSpace square in currentSpaces)
-			if (isGhost)
-				square.SetGhost (true);
-			else 
-				square.SetColor(playerColor);
+        //set the player on the square, and set the owner/color
+        foreach (StampSpace square in currentSpaces){
+            square.SetOccupyingPlayer(gameObject);
+            if (isGhost)
+                square.SetGhost(true);
+            else {
+                square.SetOwner(gameObject);
+                square.SetColor(playerColor);
+            }
+        }
+				
 	}
     
     //function that generates a wall of random length in random positions
