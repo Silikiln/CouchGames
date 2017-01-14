@@ -19,14 +19,17 @@ public class StampSpace : MonoBehaviour {
     {
         isWall = true;
         float startTime = Time.time;
-        Color startColor = spriteRenderer.color;
-        spriteRenderer = null; 
+        Color startColor = (spriteRenderer != null) ? spriteRenderer.color:Color.black;
         SetColor(Color.black);
         while (Time.time - startTime < wallDuration){
             yield return new WaitForFixedUpdate();
         }
-        spriteRenderer = null;
-        SetColor(startColor);
+        if(startColor != Color.black)
+            SetColor(startColor);
+        else
+            SetColor(Color.white);
+
+
         isWall = false;
     }
 }
