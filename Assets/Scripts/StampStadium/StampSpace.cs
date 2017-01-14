@@ -5,30 +5,36 @@ public class StampSpace : MonoBehaviour {
 	private SpriteRenderer spriteRenderer;
     public bool isWall = false;
 
+	void Start() {
+		spriteRenderer = GetComponent<SpriteRenderer> ();
+	}
+
 	public void SetColor(Color color) {
 		if (spriteRenderer == null)
 			spriteRenderer = gameObject.GetComponent<SpriteRenderer> ();
 		spriteRenderer.color = color;
 	}
 
+	public void SetGhost(bool ghostOn) {
+		Color currentColor = spriteRenderer.color;
+		currentColor.a = ghostOn ? .4f : 1;
+		spriteRenderer.color = currentColor;
+	}
+
     public void InvokeWall(int wallDuration){
         StartCoroutine(ActiveWall(wallDuration));
     }
 
-    IEnumerator ActiveWall(int wallDuration)
+    IEnumerator ActiveWall(float wallDuration)
     {
         isWall = true;
-        float startTime = Time.time;
         Color startColor = (spriteRenderer != null) ? spriteRenderer.color:Color.black;
         SetColor(Color.black);
-        while (Time.time - startTime < wallDuration){
-            yield return new WaitForFixedUpdate();
-        }
+		yield return new WaitForSeconds (wallDuration);
         if(startColor != Color.black)
             SetColor(startColor);
         else
             SetColor(Color.white);
-
 
         isWall = false;
     }

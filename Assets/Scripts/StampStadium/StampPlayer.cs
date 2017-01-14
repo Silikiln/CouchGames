@@ -15,6 +15,8 @@ public class StampPlayer : MonoBehaviour {
     private float nextWall;
     public float wallDelay;
 
+	private StampSpace[] currentSpaces;
+
     // Update is called once per frame
     void Start () {
 		MoveTo (Random.Range (gameGrid.Left, gameGrid.Right - size), Random.Range (gameGrid.Bottom, gameGrid.Top - size));
@@ -48,17 +50,27 @@ public class StampPlayer : MonoBehaviour {
 		StampSpace[] targetSpaces = new StampSpace[size * size];
 		for (int i = 0; i < size * size; i++) {
             GameObject space;
-            if (!gameGrid.TryGetGridObject(x + i % size, 0, y + i / size, out space) || (space.GetComponent<StampSpace>().isWall && !isGhost))
+			if (!gameGrid.TryGetGridObject(x + i % size, 0, y + i / size, out space))
 				return;
 			targetSpaces [i] = space.GetComponent<StampSpace>();
+			if (targetSpaces [i].isWall && !isGhost)
+				return;
 		}
 		this.x = x;
 		this.y = y;
 		this.delayTimer = movementDelay;
 
-        foreach (StampSpace square in targetSpaces)
-            square.SetColor(playerColor);
+		if (isGhost && currentSpaces != null)
+			foreach (StampSpace square in currentSpaces)
+				square.SetGhost (false);
 
+		currentSpaces = targetSpaces;
+
+		foreach (StampSpace square in currentSpaces)
+			if (isGhost)
+				square.SetGhost (true);
+			else 
+				square.SetColor(playerColor);
 	}
     
     //function that generates a wall of random length in random positions
