@@ -2,28 +2,43 @@
 using System.Collections;
 
 public class StampSpace : MonoBehaviour {
-	private SpriteRenderer spriteRenderer;
-    public bool isWall = false;
-    public GameObject owner;
-    public GameObject occupyingPlayer;
+	public bool IsWall { get; private set; }
 
-    void Start() {
-		spriteRenderer = GetComponent<SpriteRenderer> ();
+	public bool Occupied { get; private set; }
+	public bool Ghosted { get; private set; }
+
+	public Color defaultColor = Color.white;
+
+	private SpriteRenderer _spriteRenderer;
+	private SpriteRenderer spriteRenderer {
+		get {
+			if (_spriteRenderer == null)
+				_spriteRenderer = GetComponent<SpriteRenderer> ();
+			return _spriteRenderer;
+		}
 	}
 
-    public void SetOwner(GameObject player){if(owner == null)owner = player;}
-    public void SetOccupyingPlayer(GameObject player) { occupyingPlayer = (occupyingPlayer == null)?player:null; }
+	public StampPlayer Owner { get; private set; }
 
-    public void SetColor(Color color) {
-		if (spriteRenderer == null)
-			spriteRenderer = gameObject.GetComponent<SpriteRenderer> ();
-		spriteRenderer.color = color;
+	private void UpdateColor() {
+		Color toColor = IsWall ? Color.black : defaultColor;
+		if (Ghosted && !Occupied)
+			toColor.a = .4f;
+		spriteRenderer.color = toColor;
+	}
+
+	public void SetOccupyingPlayer(StampPlayer player) {
+		Occupied = player != null;
+		if (Occupied && Owner == null) {
+			Owner = player;
+			defaultColor = player.playerColor;
+		}
+		UpdateColor ();
 	}
 
 	public void SetGhost(bool ghostOn) {
-		Color currentColor = spriteRenderer.color;
-		currentColor.a = ghostOn ? .4f : 1;
-		spriteRenderer.color = currentColor;
+		Ghosted = ghostOn;
+		UpdateColor ();
 	}
 
     public void InvokeWall(int wallDuration){
@@ -32,15 +47,10 @@ public class StampSpace : MonoBehaviour {
 
     IEnumerator ActiveWall(float wallDuration)
     {
-        isWall = true;
-        Color startColor = (spriteRenderer != null) ? spriteRenderer.color:Color.black;
-        SetColor(Color.black);
+        IsWall = true;
+		UpdateColor ();
 		yield return new WaitForSeconds (wallDuration);
-        if(startColor != Color.black)
-            SetColor(startColor);
-        else
-            SetColor(Color.white);
-
-        isWall = false;
+        IsWall = false;
+		UpdateColor ();
     }
 }
