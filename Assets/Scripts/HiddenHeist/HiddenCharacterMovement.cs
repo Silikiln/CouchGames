@@ -20,6 +20,7 @@ public class HiddenCharacterMovement : MonoBehaviour {
 		GetComponent<SpriteRenderer> ().color = new Color (Random.Range (0f, 1f), Random.Range (0f, 1f), Random.Range (0f, 1f));
 
 		movementHandler = GetComponent<BasicMovement> ();
+		movementHandler.enabled = playerControlled;
 	}
 	
 	// Update is called once per frame
