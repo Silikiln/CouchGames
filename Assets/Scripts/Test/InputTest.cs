@@ -24,8 +24,8 @@ public class InputTest : MonoBehaviour {
 			if (nextFree == null || nextFree.order > order)
 				nextFree = this;
 			if (this == nextFree) {
-				gamepad = GamepadInput.Get (2);// GamepadInput.AllGamepads.Find (controller => !controller.InUse && Input.GetButton (controller.Start));
-				if (gamepad != null && Input.GetButton(gamepad.Start)) {
+				gamepad = GamepadInput.AllGamepads.Find (controller => !controller.InUse && controller.Start);
+				if (gamepad != null && gamepad.Start) {
 					nextFree = null;
 					gamepad.Lock ();
 					spriteRender.enabled = true;
@@ -35,19 +35,19 @@ public class InputTest : MonoBehaviour {
 
 		if (gamepad != null) {
 			Color targetColor = Color.white;
-			if (Input.GetButton (gamepad.A))
+			if (gamepad.A)
 				targetColor = Color.green;
-			else if (Input.GetButton (gamepad.X))
+			else if (gamepad.X)
 				targetColor = Color.blue;
-			else if (Input.GetButton (gamepad.Y))
+			else if (gamepad.Y)
 				targetColor = Color.yellow;
-			else if (Input.GetButton (gamepad.B))
+			else if (gamepad.B)
 				targetColor = Color.red;
 			
 			spriteRender.color = targetColor;
-			transform.position = startPosition + new Vector3 (Input.GetAxis (gamepad.LeftHorizontal), -Input.GetAxis (gamepad.LeftVertical));
+			transform.position = startPosition + new Vector3 (gamepad.Left_X, -gamepad.Left_Y);
 
-			if (Input.GetButton (gamepad.Back)) {
+			if (gamepad.Back) {
 				gamepad.Free ();
 				spriteRender.enabled = false;
 				gamepad = null;

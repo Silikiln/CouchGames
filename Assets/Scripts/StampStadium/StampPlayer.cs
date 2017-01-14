@@ -6,6 +6,7 @@ public class StampPlayer : MonoBehaviour {
 
 	public float movementDelay;
     
+	public int player = 1;
     public int size = 1;
 	public Color playerColor = Color.cyan;
 	public Grid gameGrid;
@@ -15,24 +16,24 @@ public class StampPlayer : MonoBehaviour {
     private float nextWall;
     public float wallDelay;
 
+	private GamepadInput gamepad;
 	private StampSpace[] currentSpaces;
 
     // Update is called once per frame
     void Start () {
 		MoveTo (Random.Range (gameGrid.Left, gameGrid.Right - size), Random.Range (gameGrid.Bottom, gameGrid.Top - size));
+		gamepad = GamepadInput.Get (player);
 	}
 
 	void Update() {
-		if (delayTimer > 0)
-			delayTimer -= Time.deltaTime;
-		if (delayTimer <= 0) {
-			if (Input.GetKey (KeyCode.W))
+		if ((delayTimer > 0 ? delayTimer -= Time.deltaTime : delayTimer) <= 0) {
+			if (gamepad.LeftStickUp)
 				MoveTo (x, y - 1);
-			else if (Input.GetKey (KeyCode.A))
+			else if (gamepad.LeftStickLeft)
 				MoveTo (x - 1, y);
-			else if (Input.GetKey (KeyCode.S))
+			else if (gamepad.LeftStickDown)
 				MoveTo (x, y + 1);
-			else if (Input.GetKey (KeyCode.D))
+			else if (gamepad.LeftStickRight)
 				MoveTo (x + 1, y);
 		}
 
