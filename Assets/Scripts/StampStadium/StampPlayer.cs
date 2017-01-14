@@ -19,6 +19,9 @@ public class StampPlayer : MonoBehaviour {
 	private GamepadInput gamepad;
 	private StampSpace[] currentSpaces;
 
+    private float nextSwing;
+    public float swingDelay;
+
     // Update is called once per frame
     void Start () {
 		MoveTo (Random.Range (gameGrid.Left, gameGrid.Right - size), Random.Range (gameGrid.Bottom, gameGrid.Top - size));
@@ -43,7 +46,10 @@ public class StampPlayer : MonoBehaviour {
                 nextWall = Time.time + wallDelay;
                 BossWall();
             }
-
+            if (Input.GetKey(KeyCode.C) && Time.time > nextSwing){
+                nextSwing = Time.time + swingDelay;
+                GhostSwing();
+            }
         }
 	}
 
@@ -63,24 +69,23 @@ public class StampPlayer : MonoBehaviour {
 
         //block to remove the currently occupying player
 		if (isGhost && currentSpaces != null)
-			foreach (StampSpace square in currentSpaces){
+			foreach (StampSpace square in currentSpaces)
                 square.SetGhost(false);
-                square.SetOccupyingPlayer(gameObject);
-            }
+
 		if(!isGhost && currentSpaces != null)
-            foreach (StampSpace square in currentSpaces){
+            foreach (StampSpace square in currentSpaces)
                 square.SetOccupyingPlayer(gameObject);
-            }
+
 
         //update currentSpaces to be the spaces we are moving to
         currentSpaces = targetSpaces;
 
         //set the player on the square, and set the owner/color
         foreach (StampSpace square in currentSpaces){
-            square.SetOccupyingPlayer(gameObject);
             if (isGhost)
                 square.SetGhost(true);
             else {
+                square.SetOccupyingPlayer(gameObject);
                 square.SetOwner(gameObject);
                 square.SetColor(playerColor);
             }
@@ -88,7 +93,7 @@ public class StampPlayer : MonoBehaviour {
 				
 	}
     
-    //function that generates a wall of random length in random positions
+    //function that generates walls of random length in random positions
     void BossWall(){
         //values that represents the total number of walls to create and the max possible size of said walls.
         int wallsToCreate = 4;
@@ -198,5 +203,57 @@ public class StampPlayer : MonoBehaviour {
                 }
             }
         }
+    }
+
+    //function that handles the ghost attack
+    void GhostSwing(){
+        Debug.Log("Boo");
+        //generate a hashSet that will contain all squares covered by the attack
+        HashSet<StampSpace> attackSquares = new HashSet<StampSpace>();
+        foreach (StampSpace square in currentSpaces){
+            //add the square the ghost is currently standing on to the hashset
+            attackSquares.Add(square);
+
+            //find all surrounding squares and add those to a list
+            List<Vector3> surroundingPositions = new List<Vector3>();
+            Vector3 up = new Vector3(square.transform.position.x, square.transform.position.y, square.transform.position.z);
+            Vector3 upRight = new Vector3(square.transform.position.x, square.transform.position.y, square.transform.position.z);
+            Vector3 right = new Vector3(square.transform.position.x, square.transform.position.y, square.transform.position.z);
+            Vector3 downRight = new Vector3(square.transform.position.x, square.transform.position.y, square.transform.position.z);
+            Vector3 down = new Vector3(square.transform.position.x, square.transform.position.y, square.transform.position.z);
+            Vector3 downLeft = new Vector3(square.transform.position.x, square.transform.position.y, square.transform.position.z);
+            Vector3 left = new Vector3(square.transform.position.x, square.transform.position.y, square.transform.position.z);
+            Vector3 upLeft = new Vector3(square.transform.position.x, square.transform.position.y, square.transform.position.z);
+            surroundingPositions.Add(up);
+            surroundingPositions.Add(upRight);
+            surroundingPositions.Add(right);
+            surroundingPositions.Add(downRight);
+            surroundingPositions.Add(down);
+            surroundingPositions.Add(downLeft);
+            surroundingPositions.Add(left);
+            surroundingPositions.Add(upLeft);
+
+            //if those squares are valid grid points add them to the hashset
+            foreach (Vector3 gridPos in surroundingPositions){
+                GameObject tempSpace = null;
+                if (gameGrid.TryGetGridObject(gridPos, out tempSpace))
+                    attackSquares.Add(tempSpace.GetComponent<StampSpace>());
+            }
+        }
+
+        //loop over all of the squares we designated to attack and check if a player is currently on them
+        foreach(StampSpace squareToAttack in attackSquares){
+            if (squareToAttack.occupyingPlayer != null){
+                StampPlayer player = squareToAttack.occupyingPlayer.GetComponent<StampPlayer>();
+                player.PlayerDeath();
+            }    
+        }
+    }
+
+    void PlayerDeath(){
+        Debug.Log("Killed a player");
+        Destroy(gameObject);
+
+        //call manager to update the game state
     }
 }
