@@ -32,6 +32,7 @@ public class StampSpace : MonoBehaviour {
 		if (Occupied && Owner == null) {
 			Owner = player;
 			defaultColor = player.playerColor;
+			StampManager.SpaceStamped ();
 		}
 		UpdateColor ();
 	}

@@ -27,7 +27,11 @@ public class StampPlayer : MonoBehaviour {
 	}
 
     void Start () {
-		MoveTo (Random.Range (gameGrid.Left, gameGrid.Right - size), Random.Range (gameGrid.Bottom, gameGrid.Top - size));
+		if (!isGhost)
+			StampManager.players.Add (this);
+		else
+			StampManager.ghost = this;
+		while(!MoveTo (Random.Range (gameGrid.Left, gameGrid.Right - size), Random.Range (gameGrid.Bottom, gameGrid.Top - size)));
 	}
 
 	void Update() {
@@ -216,11 +220,13 @@ public class StampPlayer : MonoBehaviour {
     }
 
     void PlayerDeath(){
-        Debug.Log("Killed a player");
+        Destroy(gameObject);
+    }
+
+	void OnDestroy() {
+		Debug.Log("Killed a player");
 		foreach (StampSpace space in currentSpaces)
 			space.SetOccupyingPlayer (null);
-        Destroy(gameObject);
-
-        //call manager to update the game state
-    }
+		StampManager.PlayerKilled (this);
+	}
 }
