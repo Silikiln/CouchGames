@@ -11,7 +11,6 @@ public class StampPlayer : MonoBehaviour {
 	public Color playerColor = Color.cyan;
 	public Grid gameGrid;
     public bool isGhost = false;
-
 	private float movementTimer = 0, wallTimer = 0, swingTimer = 0;
 	private int x, y;
     
@@ -53,6 +52,11 @@ public class StampPlayer : MonoBehaviour {
             
 			if ((swingTimer > 0 ? swingTimer -= Time.deltaTime : swingTimer) <= 0 && gamepad.A)
                 GhostSwing();
+        }
+        else{
+            //highlight the squares the player is current occupying (how to get gamepad button up?)
+            if (gamepad.Y || Input.GetKey(KeyCode.N)) { PlayerHighlight(true); }
+            if (Input.GetKeyUp(KeyCode.N)) { PlayerHighlight(false); }
         }
 	}
 
@@ -229,4 +233,14 @@ public class StampPlayer : MonoBehaviour {
 			space.SetOccupyingPlayer (null);
 		StampManager.PlayerKilled (this);
 	}
+
+    //function that allows a player to highlight the spaces that they are currently occupying
+    void PlayerHighlight(bool doLight){
+        foreach (StampSpace space in currentSpaces)
+            space.HighlightSpace(doLight);
+    }
+
+    void CoolDownTracker(){
+
+    }
 }

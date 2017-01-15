@@ -54,4 +54,9 @@ public class StampSpace : MonoBehaviour {
         IsWall = false;
 		UpdateColor ();
     }
+
+    public void HighlightSpace(bool doLight){
+        defaultColor.g = (doLight)?1:0;
+        UpdateColor();
+    }
 }
