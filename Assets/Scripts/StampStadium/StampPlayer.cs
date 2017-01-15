@@ -228,7 +228,8 @@ public class StampPlayer : MonoBehaviour {
 			StampSpace space = targetSquare.GetComponent<StampSpace> ();
 			if (space.Occupied){
 				space.Owner.PlayerDeath();
-            }  
+            }
+            space.InvokeSwingColor(0.5f, Color.magenta);
         }
 
 		swingTimer = swingDelay;

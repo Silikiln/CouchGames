@@ -59,4 +59,18 @@ public class StampSpace : MonoBehaviour {
         defaultColor.g = (doLight)?1:0;
         UpdateColor();
     }
+
+    public void InvokeSwingColor(float colorDuration, Color colorToUse){
+        StartCoroutine(GhostSwingColor(colorDuration, colorToUse));
+    }
+
+    private IEnumerator GhostSwingColor(float colorDuration, Color colorToUse)
+    {
+        Color startColor = defaultColor;
+        defaultColor = colorToUse;
+        UpdateColor();
+        yield return new WaitForSeconds(colorDuration);
+        defaultColor = startColor;
+        UpdateColor();
+    }
 }
