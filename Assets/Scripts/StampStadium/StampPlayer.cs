@@ -13,8 +13,9 @@ public class StampPlayer : MonoBehaviour {
     public bool isGhost = false;
 	private float movementTimer = 0, wallTimer = 0, swingTimer = 0;
 	private int x, y;
-    
-	private StampSpace[] currentSpaces;
+    public GameObject cdHandler;
+    private TextMesh swingTimeText, wallTimeText;
+    private StampSpace[] currentSpaces;
 
 	private GamepadInput _gamepad;
 	private GamepadInput gamepad {
@@ -28,8 +29,12 @@ public class StampPlayer : MonoBehaviour {
     void Start () {
 		if (!isGhost)
 			StampManager.players.Add (this);
-		else
-			StampManager.ghost = this;
+        else{
+            StampManager.ghost = this;
+            swingTimeText = cdHandler.transform.FindChild("swingTimer").GetComponent<TextMesh>();
+            wallTimeText = cdHandler.transform.FindChild("wallTimer").GetComponent<TextMesh>();
+        }
+			
 		while(!MoveTo (Random.Range (gameGrid.Left, gameGrid.Right - size), Random.Range (gameGrid.Bottom, gameGrid.Top - size)));
 	}
 
@@ -47,11 +52,17 @@ public class StampPlayer : MonoBehaviour {
 
         //updates specific to boss player
         if (isGhost){
-			if ((wallTimer > 0 ? wallTimer -= Time.deltaTime : wallTimer) <= 0 && gamepad.X)
+			if ((wallTimer > 0 ? wallTimer -= Time.deltaTime : wallTimer) <= 0 && (gamepad.X || Input.GetKeyDown(KeyCode.X))){
                 BossWall();
+                StartCoroutine(CoolDownTracker(wallDelay, wallTimeText));
+            }
+                
             
-			if ((swingTimer > 0 ? swingTimer -= Time.deltaTime : swingTimer) <= 0 && gamepad.A)
+            if ((swingTimer > 0 ? swingTimer -= Time.deltaTime : swingTimer) <= 0 && (gamepad.A || Input.GetKeyDown(KeyCode.V))){
                 GhostSwing();
+                StartCoroutine(CoolDownTracker(swingTimer, swingTimeText));
+            }
+                
         }
         else{
             //highlight the squares the player is current occupying (how to get gamepad button up?)
@@ -240,7 +251,18 @@ public class StampPlayer : MonoBehaviour {
             space.HighlightSpace(doLight);
     }
 
-    void CoolDownTracker(){
+    IEnumerator CoolDownTracker(float duration, TextMesh timerText){
+        float countDownTimer = duration;
+        timerText.text = string.Format("{0:0.0}s", countDownTimer);
 
+        yield return null;
+        while (countDownTimer > 0)
+        {
+            countDownTimer -= Time.deltaTime;
+            timerText.text = string.Format("{0:0.0}s", countDownTimer);
+
+            yield return null;
+        }
+        timerText.text = "0s";
     }
 }
