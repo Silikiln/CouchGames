@@ -25,6 +25,5 @@ public class StampManager : MonoBehaviour {
 		if (++stampedSpaces == totalSpaces) {
 			Debug.Log ("Players win");
 		}
-		Debug.Log (stampedSpaces + "/" + totalSpaces);
 	}
 }
