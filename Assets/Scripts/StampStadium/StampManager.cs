@@ -8,6 +8,8 @@ public class StampManager : MonoBehaviour {
     public GameObject endScreen;
 	private static int totalSpaces, stampedSpaces;
 
+    //need to add in a call to endScreen.GetComponent(EndScreen).UpdateEnd(player names and such)
+
 	void Start() {
 		totalSpaces = gameGrid.Width * gameGrid.Height;
 		stampedSpaces = 0;
