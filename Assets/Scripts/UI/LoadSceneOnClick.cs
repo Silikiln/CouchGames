@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 public class LoadSceneOnClick : MonoBehaviour {
-    public static int chosenSceneIndex = 0;
     public void LoadByIndex(int sceneIndex){
-        chosenSceneIndex = sceneIndex;
+		SelectManager.chosenSceneIndex = sceneIndex;
         SceneManager.LoadScene("PlayerSelect");
     }
 }
