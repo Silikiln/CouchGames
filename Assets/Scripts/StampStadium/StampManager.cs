@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 
 public class StampManager : MonoBehaviour {
+	public static StampManager Instance { get; private set; }
 	public static List<StampPlayer> ActivePlayers = new List<StampPlayer> ();
 	private static int totalSpaces, stampedSpaces;
 
+
 	public Grid gameGrid;
-	public GameObject endScreen;
+	public EndScreen endScreen;
 	public StampPlayer ghost;
 	public StampPlayer[] players;
 
@@ -15,6 +17,8 @@ public class StampManager : MonoBehaviour {
     //need to add in a call to endScreen.GetComponent(EndScreen).UpdateEnd(player names and such)
 
 	void Start() {
+		Instance = this;
+
 		ghost.Gamepad = GameTeams.TeamMembers (0) [0];
 		GamepadInput[] playerGamepads = GameTeams.TeamMembers (1);
 		for (int i = 0; i < playerGamepads.Length; i++) {
@@ -28,14 +32,15 @@ public class StampManager : MonoBehaviour {
 
 	public static void PlayerKilled(StampPlayer player) {
 		ActivePlayers.Remove (player);
+		Debug.Log (ActivePlayers.Count);
 		if (ActivePlayers.Count == 0) {
-			Debug.Log ("Ghost wins");
+			Instance.endScreen.UpdateEnd ("Ghost", new string[0]);
 		}
 	}
 
 	public static void SpaceStamped() {
 		if (++stampedSpaces == totalSpaces) {
-			Debug.Log ("Players win");
+			Instance.endScreen.UpdateEnd ("Players", new string[0]);
 		}
 	}
 }

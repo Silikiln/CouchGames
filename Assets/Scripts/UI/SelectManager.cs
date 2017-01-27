@@ -8,7 +8,7 @@ using UnityEngine.UI;
 using GameInfo = GameTeams.GameInfo;
 
 public class SelectManager : MonoBehaviour {
-	public static int chosenSceneIndex = 0;
+	public static int chosenGameIndex = 0;
 
 	public GameInfo[] GameInformation;
 
@@ -22,8 +22,10 @@ public class SelectManager : MonoBehaviour {
 	private GameInfo targetGame;
 
     void Start () {
+		foreach (GamepadInput gamepad in GamepadInput.AllGamepads)
+			gamepad.Free ();
 		GameTeams.GamepadTeam.Clear ();
-		targetGame = GameInformation [chosenSceneIndex];
+		targetGame = GameInformation [chosenGameIndex];
 		GameTitle.text = targetGame.Title;
 
 		playersJoined = new GamepadInput[targetGame.MaxPlayers];
