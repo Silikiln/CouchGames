@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 using GameInfo = GameTeams.GameInfo;
@@ -17,10 +19,11 @@ public class SelectManager : MonoBehaviour {
 	private Dictionary<int, TeamPanel> usedPanels = new Dictionary<int, TeamPanel> ();
 	private GamepadInput[] playersJoined;
 	private int startTeam;
+	private GameInfo targetGame;
 
     void Start () {
 		GameTeams.GamepadTeam.Clear ();
-		GameInfo targetGame = GameInformation [chosenSceneIndex];
+		targetGame = GameInformation [chosenSceneIndex];
 		GameTitle.text = targetGame.Title;
 
 		playersJoined = new GamepadInput[targetGame.MaxPlayers];
@@ -31,14 +34,17 @@ public class SelectManager : MonoBehaviour {
 		else {
 			startTeam = -1;
 			usedPanels.Add (-1, CenterPanel);
+			CenterPanel.gameObject.SetActive (true);
 			if (targetGame.TeamCount == 2) {
 				usedPanels.Add (0, LeftPanel);
 				usedPanels.Add (1, RightPanel);
 			}
 		}
 
-		for (int i = 0; i < targetGame.TeamCount; i++)
-			usedPanels [i].TeamTitle.text = targetGame.TeamDescription [i].TeamName;
+		for (int i = 0; i < targetGame.TeamCount; i++) {
+			usedPanels [i].gameObject.SetActive (true);
+			usedPanels [i].TeamTitle.text = targetGame.Teams [i].TeamName;
+		}
 	}
 
 	void Update() {
@@ -49,6 +55,8 @@ public class SelectManager : MonoBehaviour {
 					usedPanels [GameTeams.GamepadTeam [playersJoined [i]]].Leave ("P" + (i + 1));
 					GameTeams.GamepadTeam.Remove (playersJoined [i]);
 					playersJoined [i] = null;
+				} else if (playersJoined [i].Start && ValidTeams) {
+					SceneManager.LoadScene ("stampTest");
 				} else if (playersJoined [i].Left_X < 0) {
 					MoveTeam (i, 0);
 				} else if (playersJoined [i].Left_X > 0) {
@@ -68,6 +76,19 @@ public class SelectManager : MonoBehaviour {
 		playersJoined [index] = gamepad;
 		GameTeams.GamepadTeam.Add (gamepad, startTeam);
 		CenterPanel.Join("P" + (index + 1));
+	}
+
+	private bool ValidTeams {
+		get {
+			if (GameTeams.GamepadTeam.Values.Contains (-1))
+				return false;
+
+			int[] teamSizes = GameTeams.TeamSizes;
+			for (int i = 0; i < targetGame.TeamCount; i++)
+				if (!targetGame.Teams [i].Valid (teamSizes [i]))
+					return false;
+			return true;
+		}
 	}
 
 	private void MoveTeam(int playerIndex, int targetTeam) {
