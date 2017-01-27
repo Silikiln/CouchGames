@@ -40,14 +40,20 @@ public class StampPlayer : MonoBehaviour {
 
 	void Update() {
 		if ((movementTimer > 0 ? movementTimer -= Time.deltaTime : movementTimer) <= 0) {
-			if (gamepad.LeftStickUp)
-				MoveTo (x, y - 1);
-			else if (gamepad.LeftStickLeft)
-				MoveTo (x - 1, y);
-			else if (gamepad.LeftStickDown)
-				MoveTo (x, y + 1);
-			else if (gamepad.LeftStickRight)
-				MoveTo (x + 1, y);
+			if (gamepad.LeftStickUp){
+                PlayerHighlightMoveCheck();
+                MoveTo(x, y - 1);
+            }else if (gamepad.LeftStickLeft){
+                PlayerHighlightMoveCheck();
+                MoveTo(x - 1, y);
+            }else if (gamepad.LeftStickDown){
+                PlayerHighlightMoveCheck();
+                MoveTo(x, y + 1);
+            }else if (gamepad.LeftStickRight){
+                PlayerHighlightMoveCheck();
+                MoveTo(x + 1, y);
+            }
+				
 		}
 
         //updates specific to boss player
@@ -66,8 +72,8 @@ public class StampPlayer : MonoBehaviour {
         }
         else{
             //highlight the squares the player is current occupying (how to get gamepad button up?)
-            if (gamepad.Y || Input.GetKey(KeyCode.N)) { PlayerHighlight(true); }
-            if (Input.GetKeyUp(KeyCode.N)) { PlayerHighlight(false); }
+             PlayerHighlight((gamepad.Y || Input.GetKey(KeyCode.N)));
+            //if (gamepad.Y || Input.GetKeyUp(KeyCode.N)) { PlayerHighlight(false); }
         }
 	}
 
@@ -245,6 +251,11 @@ public class StampPlayer : MonoBehaviour {
 			space.SetOccupyingPlayer (null);
 		StampManager.PlayerKilled (this);
 	}
+
+    //highlight removal check. called when a player moves from their current space (to remove highlight)
+    void PlayerHighlightMoveCheck(){
+        if (!isGhost) PlayerHighlight(false);
+    }
 
     //function that allows a player to highlight the spaces that they are currently occupying
     void PlayerHighlight(bool doLight){
