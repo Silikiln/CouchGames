@@ -7,9 +7,12 @@ public class GameTeams {
 
 	[System.Serializable]
 	public class GameInfo {
+
 		public string Title;
 		public string Description;
 		public GameTeam[] TeamDescription;
+
+		public int TeamCount { get { return TeamDescription.Length; } }
 
 		public int MaxPlayers { 
 			get {
