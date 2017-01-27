@@ -4,10 +4,11 @@ using System.Collections.Generic;
 public class StampManager : MonoBehaviour {
 	public static List<StampPlayer> players = new List<StampPlayer> ();
 	public static StampPlayer ghost;
-
-	public Grid gameGrid;
-
+    public Grid gameGrid;
+    public GameObject endScreen;
 	private static int totalSpaces, stampedSpaces;
+
+    //need to add in a call to endScreen.GetComponent(EndScreen).UpdateEnd(player names and such)
 
 	void Start() {
 		totalSpaces = gameGrid.Width * gameGrid.Height;

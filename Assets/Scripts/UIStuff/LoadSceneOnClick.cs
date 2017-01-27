@@ -8,4 +8,8 @@ public class LoadSceneOnClick : MonoBehaviour {
         chosenSceneIndex = sceneIndex;
         SceneManager.LoadScene("PlayerSelect");
     }
+    public void LoadOtherByIndex(int sceneIndex){
+        chosenSceneIndex = 0;
+        SceneManager.LoadScene(sceneIndex);
+    }
 }
