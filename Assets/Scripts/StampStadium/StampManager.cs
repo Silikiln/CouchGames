@@ -20,6 +20,7 @@ public class StampManager : MonoBehaviour {
 		Instance = this;
 
 		if (SelectManager.chosenGameIndex == -1) {
+			GameTeams.GamepadTeam.Clear ();
 			GameTeams.GamepadTeam.Add (GamepadInput.Get (0), 0);
 			GameTeams.GamepadTeam.Add (GamepadInput.Get (1), 1);
 		}
