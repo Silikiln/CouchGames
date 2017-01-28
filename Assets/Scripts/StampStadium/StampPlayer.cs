@@ -29,12 +29,16 @@ public class StampPlayer : MonoBehaviour {
 	}
 
 	public void PlayerDeath(){
-        Destroy(gameObject);
-    }
-
-	void OnDestroy() {
 		foreach (StampSpace space in CurrentSpaces)
 			space.SetOccupyingPlayer (null);
 		StampManager.PlayerKilled (this);
-	}
+		this.enabled = false;
+		StampGhost ghostScript = gameObject.GetComponent<StampGhost> ();
+		if (ghostScript == null)
+			return;
+		ghostScript.Gamepad = Gamepad;
+		movementHandler.playerHandler = ghostScript;
+		movementHandler.MoveTo (X, Y);
+		ghostScript.enabled = true;
+    }
 }

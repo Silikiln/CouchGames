@@ -12777,6 +12777,7 @@ GameObject:
   - component: {fileID: 1699977075}
   - component: {fileID: 1699977074}
   - component: {fileID: 1699977076}
+  - component: {fileID: 1699977077}
   m_Layer: 0
   m_Name: Player 1
   m_TagString: Untagged
@@ -12825,6 +12826,22 @@ MonoBehaviour:
   movementDelay: 0.4
   size: 1
   gameGrid: {fileID: 777271853}
+--- !u!114 &1699977077
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1699977073}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ec92ae685d660242aa5e8afcaf3ac58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerColor: {r: 0, g: 1, b: 1, a: 1}
+  wallDelay: 20
+  swingDelay: 4
+  swingTimeText: {fileID: 2094941718}
+  wallTimeText: {fileID: 1673552783}
 --- !u!1 &1709078736
 GameObject:
   m_ObjectHideFlags: 0

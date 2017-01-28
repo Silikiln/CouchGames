@@ -23,6 +23,7 @@ public class StampManager : MonoBehaviour {
 			GameTeams.GamepadTeam.Clear ();
 			GameTeams.GamepadTeam.Add (GamepadInput.Get (0), 0);
 			GameTeams.GamepadTeam.Add (GamepadInput.Get (1), 1);
+			GameTeams.GamepadTeam.Add (GamepadInput.Get (2), 1);
 		}
 			
 		ghost.Gamepad = GameTeams.TeamMembers (0) [0];

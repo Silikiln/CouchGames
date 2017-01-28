@@ -9,7 +9,7 @@ public class StampMovement : MonoBehaviour {
 	public Grid gameGrid;
 
 	private float movementTimer;
-	private StampPlayer playerHandler;
+	public StampPlayer playerHandler;
 
 	public int X { get; private set; }
 	public int Y { get; private set; }
@@ -39,7 +39,7 @@ public class StampMovement : MonoBehaviour {
 		}
 	}
 
-	protected bool MoveTo(int x, int y)	{
+	public bool MoveTo(int x, int y)	{
 		StampSpace[] targetSpaces = new StampSpace[size * size];
 		for (int i = 0; i < size * size; i++) {
 			GameObject space;

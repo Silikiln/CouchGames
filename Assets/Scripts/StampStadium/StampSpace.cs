@@ -2,10 +2,12 @@
 using System.Collections;
 
 public class StampSpace : MonoBehaviour {
+	private int ghostCount = 0;
+
 	public bool IsWall { get; private set; }
 
 	public bool Occupied { get; private set; }
-	public bool Ghosted { get; private set; }
+	public bool Ghosted { get { return ghostCount > 0; } }
 
 	public Color defaultColor = Color.white;
 
@@ -30,7 +32,7 @@ public class StampSpace : MonoBehaviour {
 			toColor = defaultColor;
 		
 		if (Ghosted && !Occupied)
-			toColor.a = .4f;
+			toColor.a = .3f;
 		
 		spriteRenderer.color = toColor;
 	}
@@ -46,7 +48,7 @@ public class StampSpace : MonoBehaviour {
 	}
 
 	public void SetGhost(bool ghostOn) {
-		Ghosted = ghostOn;
+		ghostCount = Mathf.Clamp(ghostCount + (ghostOn ? 1 : -1), 0, 4);
 		UpdateColor ();
 	}
 
