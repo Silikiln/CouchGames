@@ -24,6 +24,7 @@ public class StampManager : MonoBehaviour {
 		for (int i = 0; i < playerGamepads.Length; i++) {
 			players [i].gameObject.SetActive (true);
 			players [i].Gamepad = playerGamepads [i];
+			ActivePlayers.Add (players [i]);
 		}
 
 		totalSpaces = gameGrid.Width * gameGrid.Height;
