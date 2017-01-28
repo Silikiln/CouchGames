@@ -18,6 +18,8 @@ public class StampPlayer : MonoBehaviour {
 
 	public GamepadInput Gamepad { get; set; }
 
+	public bool Highlight { get { return Gamepad.Y || Input.GetKey (KeyCode.N); } }
+
     public void Start () {
 		if (isGhost) {
             swingTimeText = cdHandler.transform.FindChild("swingTimer").GetComponent<TextMesh>();
@@ -30,40 +32,33 @@ public class StampPlayer : MonoBehaviour {
 	void Update() {
 		if ((movementTimer > 0 ? movementTimer -= Time.deltaTime : movementTimer) <= 0) {
 			if (Gamepad.LeftStickUp){
-                PlayerHighlightMoveCheck();
                 MoveTo(x, y - 1);
             }else if (Gamepad.LeftStickLeft){
-                PlayerHighlightMoveCheck();
                 MoveTo(x - 1, y);
             }else if (Gamepad.LeftStickDown){
-                PlayerHighlightMoveCheck();
                 MoveTo(x, y + 1);
             }else if (Gamepad.LeftStickRight){
-                PlayerHighlightMoveCheck();
                 MoveTo(x + 1, y);
             }
 				
 		}
 
         //updates specific to boss player
-        if (isGhost){
-			if ((wallTimer > 0 ? wallTimer -= Time.deltaTime : wallTimer) <= 0 && (Gamepad.X || Input.GetKeyDown(KeyCode.X))){
-                BossWall();
-                StartCoroutine(CoolDownTracker(wallDelay, wallTimeText));
-            }
+		if (isGhost) {
+			if ((wallTimer > 0 ? wallTimer -= Time.deltaTime : wallTimer) <= 0 && (Gamepad.X || Input.GetKeyDown (KeyCode.X))) {
+				BossWall ();
+				StartCoroutine (CoolDownTracker (wallDelay, wallTimeText));
+			}
                 
             
-            if ((swingTimer > 0 ? swingTimer -= Time.deltaTime : swingTimer) <= 0 && (Gamepad.A || Input.GetKeyDown(KeyCode.V))){
-                GhostSwing();
-                StartCoroutine(CoolDownTracker(swingTimer, swingTimeText));
-            }
-                
-        }
-        else{
-            //highlight the squares the player is current occupying (how to get gamepad button up?)
-             PlayerHighlight((Gamepad.Y || Input.GetKey(KeyCode.N)));
-            //if (gamepad.Y || Input.GetKeyUp(KeyCode.N)) { PlayerHighlight(false); }
-        }
+			if ((swingTimer > 0 ? swingTimer -= Time.deltaTime : swingTimer) <= 0 && (Gamepad.A || Input.GetKeyDown (KeyCode.V))) {
+				GhostSwing ();
+				StartCoroutine (CoolDownTracker (swingTimer, swingTimeText));
+			}
+		} else {
+			foreach (StampSpace space in currentSpaces)
+				space.UpdateColor ();
+		}
 	}
 
 	bool MoveTo(int x, int y)	{
@@ -240,17 +235,6 @@ public class StampPlayer : MonoBehaviour {
 			space.SetOccupyingPlayer (null);
 		StampManager.PlayerKilled (this);
 	}
-
-    //highlight removal check. called when a player moves from their current space (to remove highlight)
-    void PlayerHighlightMoveCheck(){
-        if (!isGhost) PlayerHighlight(false);
-    }
-
-    //function that allows a player to highlight the spaces that they are currently occupying
-    void PlayerHighlight(bool doLight){
-        foreach (StampSpace space in currentSpaces)
-            space.HighlightSpace(doLight);
-    }
 
     IEnumerator CoolDownTracker(float duration, TextMesh timerText){
         float countDownTimer = duration;

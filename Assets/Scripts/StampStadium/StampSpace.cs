@@ -20,10 +20,18 @@ public class StampSpace : MonoBehaviour {
 
 	public StampPlayer Owner { get; private set; }
 
-	private void UpdateColor() {
-		Color toColor = IsWall ? Color.black : defaultColor;
+	public void UpdateColor() {
+		Color toColor; 
+		if (IsWall)
+			toColor = Color.black;
+		else if (Occupied && Owner != null && Owner.Highlight)
+			toColor = Color.gray;
+		else
+			toColor = defaultColor;
+		
 		if (Ghosted && !Occupied)
 			toColor.a = .4f;
+		
 		spriteRenderer.color = toColor;
 	}
 
@@ -53,11 +61,6 @@ public class StampSpace : MonoBehaviour {
 		yield return new WaitForSeconds (wallDuration);
         IsWall = false;
 		UpdateColor ();
-    }
-
-    public void HighlightSpace(bool doLight){
-        defaultColor.g = (doLight)?1:0;
-        UpdateColor();
     }
 
     public void InvokeSwingColor(float colorDuration, Color colorToUse){
