@@ -8,7 +8,7 @@ using UnityEngine.UI;
 using GameInfo = GameTeams.GameInfo;
 
 public class SelectManager : MonoBehaviour {
-	public static int chosenGameIndex = 0;
+	public static int chosenGameIndex = -1;
 
 	public GameInfo[] GameInformation;
 
@@ -22,6 +22,9 @@ public class SelectManager : MonoBehaviour {
 	private GameInfo targetGame;
 
     void Start () {
+		if (chosenGameIndex == -1)
+			chosenGameIndex = 0;
+
 		foreach (GamepadInput gamepad in GamepadInput.AllGamepads)
 			gamepad.Free ();
 		GameTeams.GamepadTeam.Clear ();
