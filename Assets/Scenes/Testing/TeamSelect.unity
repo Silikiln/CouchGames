@@ -1029,7 +1029,7 @@ GameObject:
   - component: {fileID: 1061458190}
   - component: {fileID: 1061458191}
   m_Layer: 0
-  m_Name: SelectManager
+  m_Name: TeamSelection
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1056,7 +1056,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1061458189}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 310aab67fb029bb4f833fff8a0fe9daf, type: 3}
+  m_Script: {fileID: 11500000, guid: b681efab00d8c1f46be5e9ee8afb0245, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   GameInformation:
@@ -1067,6 +1067,15 @@ MonoBehaviour:
       MinMembers: 1
       MaxMembers: 1
     - TeamName: Dudes
+      MinMembers: 1
+      MaxMembers: 3
+  - Title: Hidden Heist
+    Description: 
+    Teams:
+    - TeamName: Guard
+      MinMembers: 1
+      MaxMembers: 1
+    - TeamName: Thieves
       MinMembers: 1
       MaxMembers: 3
   GameTitle: {fileID: 1827599281}

@@ -14,11 +14,11 @@ public class StampGhost : StampPlayer {
 
 	// Update is called once per frame
 	void Update () {
-		if ((wallTimer > 0 ? wallTimer -= Time.deltaTime : wallTimer) <= 0 && Gamepad.X) {
+		if ((wallTimer > 0 ? wallTimer -= Time.deltaTime : wallTimer) <= 0 && Gamepad.GetInputActive(Gamepad.InputCode.X)) {
 			BossWall ();
 			StartCoroutine (CoolDownTracker (wallDelay, wallTimeText));
 		}
-		if ((swingTimer > 0 ? swingTimer -= Time.deltaTime : swingTimer) <= 0 && Gamepad.A) {
+		if ((swingTimer > 0 ? swingTimer -= Time.deltaTime : swingTimer) <= 0 && Gamepad.GetInputActive(Gamepad.InputCode.A)) {
 			GhostSwing ();
 			StartCoroutine (CoolDownTracker (swingDelay, swingTimeText));
 		}

@@ -19,15 +19,15 @@ public class StampManager : MonoBehaviour {
 	void Start() {
 		Instance = this;
 
-		if (SelectManager.chosenGameIndex == -1) {
+		if (TeamSelection.chosenGameIndex == -1) {
 			GameTeams.GamepadTeam.Clear ();
-			GameTeams.GamepadTeam.Add (GamepadInput.Get (0), 0);
-			GameTeams.GamepadTeam.Add (GamepadInput.Get (1), 1);
-			GameTeams.GamepadTeam.Add (GamepadInput.Get (2), 1);
+			GameTeams.GamepadTeam.Add (Gamepad.Get (0), 0);
+			GameTeams.GamepadTeam.Add (Gamepad.Get (1), 1);
+			GameTeams.GamepadTeam.Add (Gamepad.Get (2), 1);
 		}
 			
 		ghost.Gamepad = GameTeams.TeamMembers (0) [0];
-		GamepadInput[] playerGamepads = GameTeams.TeamMembers (1);
+		Gamepad[] playerGamepads = GameTeams.TeamMembers (1);
 		for (int i = 0; i < playerGamepads.Length; i++) {
 			players [i].gameObject.SetActive (true);
 			players [i].Gamepad = playerGamepads [i];

@@ -16,4 +16,4 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Testing/inputTest.unity
   - enabled: 1
-    path: Assets/Scenes/Testing/PlayerSelect.unity
+    path: Assets/Scenes/Testing/TeamSelect.unity

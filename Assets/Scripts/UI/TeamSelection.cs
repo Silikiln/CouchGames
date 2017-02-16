@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 using GameInfo = GameTeams.GameInfo;
 
-public class SelectManager : MonoBehaviour {
+public class TeamSelection : MonoBehaviour {
 	public static int chosenGameIndex = -1;
 
 	public GameInfo[] GameInformation;
@@ -17,7 +17,7 @@ public class SelectManager : MonoBehaviour {
 	public TeamPanel LeftPanel, CenterPanel, RightPanel;
 
 	private Dictionary<int, TeamPanel> usedPanels = new Dictionary<int, TeamPanel> ();
-	private GamepadInput[] playersJoined;
+	private Gamepad[] playersJoined;
 	private int startTeam;
 	private GameInfo targetGame;
 
@@ -25,13 +25,13 @@ public class SelectManager : MonoBehaviour {
 		if (chosenGameIndex == -1)
 			chosenGameIndex = 0;
 
-		foreach (GamepadInput gamepad in GamepadInput.AllGamepads)
+		foreach (Gamepad gamepad in Gamepad.AllGamepads)
 			gamepad.Free ();
 		GameTeams.GamepadTeam.Clear ();
 		targetGame = GameInformation [chosenGameIndex];
 		GameTitle.text = targetGame.Title;
 
-		playersJoined = new GamepadInput[targetGame.MaxPlayers];
+		playersJoined = new Gamepad[targetGame.MaxPlayers];
 		if (targetGame.TeamCount == 1) {
 			startTeam = 0;
 			usedPanels.Add (0, CenterPanel);
@@ -53,18 +53,18 @@ public class SelectManager : MonoBehaviour {
 	}
 
 	void Update() {
-		for (int i = 0; i < playersJoined.Length; i++)
+ 		for (int i = 0; i < playersJoined.Length; i++)
 			if (playersJoined[i] != null) {
-				if (playersJoined [i].Back) {
+				if (playersJoined [i].GetInputActive(Gamepad.InputCode.Back)) {
 					playersJoined [i].Free ();
 					usedPanels [GameTeams.GamepadTeam [playersJoined [i]]].Leave ("P" + (i + 1));
 					GameTeams.GamepadTeam.Remove (playersJoined [i]);
 					playersJoined [i] = null;
-				} else if (playersJoined [i].Start && ValidTeams) {
-					SceneManager.LoadScene ("stampTest");
-				} else if (playersJoined [i].Left_X < 0) {
+				} else if (playersJoined [i].GetInputActive(Gamepad.InputCode.Start) && ValidTeams) {
+					SceneManager.LoadScene (chosenGameIndex + 1);
+				} else if (playersJoined [i].GetInputActive(Gamepad.InputCode.LeftStickLeft)) {
 					MoveTeam (i, 0);
-				} else if (playersJoined [i].Left_X > 0) {
+				} else if (playersJoined [i].GetInputActive(Gamepad.InputCode.LeftStickRight)) {
 					MoveTeam (i, 1);
 				}
 			}
@@ -73,7 +73,7 @@ public class SelectManager : MonoBehaviour {
 		if (!TryGetFreeIndex (out index))
 			return;
 		
-		GamepadInput gamepad = GamepadInput.AllGamepads.Find (controller => !controller.InUse && controller.Start);
+		Gamepad gamepad = Gamepad.AllGamepads.Find (controller => !controller.InUse && controller.GetInputActive(Gamepad.InputCode.Start));
 		if (gamepad == null)
 			return;
 		
@@ -97,7 +97,7 @@ public class SelectManager : MonoBehaviour {
 	}
 
 	private void MoveTeam(int playerIndex, int targetTeam) {
-		GamepadInput gamepad = playersJoined [playerIndex];
+		Gamepad gamepad = playersJoined [playerIndex];
 
 		int currentTeam = GameTeams.GamepadTeam [gamepad];
 		if (currentTeam == targetTeam)

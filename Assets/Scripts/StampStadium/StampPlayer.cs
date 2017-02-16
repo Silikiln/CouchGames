@@ -13,11 +13,11 @@ public class StampPlayer : MonoBehaviour {
 	protected StampSpace[] CurrentSpaces { get { return movementHandler.CurrentSpaces; } }
 	protected Grid GameGrid { get { return movementHandler.gameGrid; } }
 
-	public GamepadInput Gamepad { get; set; }
+	public Gamepad Gamepad { get; set; }
 
 	public virtual bool IsGhost { get { return false; } }
 
-	public virtual bool Highlight { get { return Gamepad.Y || Input.GetKey (KeyCode.N); } }
+	public virtual bool Highlight { get { return Gamepad.GetInputActive(Gamepad.InputCode.Y) || Input.GetKey (KeyCode.N); } }
 
 	protected virtual void Start() {
 		movementHandler = gameObject.GetComponent<StampMovement> ();

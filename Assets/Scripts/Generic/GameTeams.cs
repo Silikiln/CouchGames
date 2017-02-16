@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 
 public class GameTeams {
-	public static Dictionary<GamepadInput, int> GamepadTeam = new Dictionary<GamepadInput, int>();
+	public static Dictionary<Gamepad, int> GamepadTeam = new Dictionary<Gamepad, int>();
 	public static int[] TeamSizes {
 		get {
 			int[] result = new int[GamepadTeam.Values.Max () + 1];
@@ -14,8 +14,8 @@ public class GameTeams {
 			return result;
 		}
 	}
-	public static GamepadInput[] TeamMembers(int teamIndex) {
-		return GamepadTeam.Where (kv => kv.Value == teamIndex).Select<KeyValuePair<GamepadInput, int>, GamepadInput>(kv => kv.Key).ToArray();
+	public static Gamepad[] TeamMembers(int teamIndex) {
+		return GamepadTeam.Where (kv => kv.Value == teamIndex).Select<KeyValuePair<Gamepad, int>, Gamepad>(kv => kv.Key).ToArray();
 	}
 
 

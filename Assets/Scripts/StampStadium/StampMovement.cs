@@ -15,7 +15,7 @@ public class StampMovement : MonoBehaviour {
 	public int Y { get; private set; }
 	public StampSpace[] CurrentSpaces { get; private set; }
 
-	private GamepadInput Gamepad { get { return playerHandler.Gamepad; } }
+	private Gamepad Gamepad { get { return playerHandler.Gamepad; } }
 
 	// Use this for initialization
 	void Start () {
@@ -27,13 +27,13 @@ public class StampMovement : MonoBehaviour {
 	void Update () {
 		if ((movementTimer > 0 ? movementTimer -= Time.deltaTime : movementTimer) <= 0) {
 			if (Gamepad == null);
-			else if (Gamepad.LeftStickUp){
+			else if (Gamepad.GetInputActive(Gamepad.InputCode.LeftStickUp)){
 				MoveTo(X, Y - 1);
-			}else if (Gamepad.LeftStickLeft){
+			}else if (Gamepad.GetInputActive(Gamepad.InputCode.LeftStickLeft)){
 				MoveTo(X - 1, Y);
-			}else if (Gamepad.LeftStickDown){
+			}else if (Gamepad.GetInputActive(Gamepad.InputCode.LeftStickDown)){
 				MoveTo(X, Y + 1);
-			}else if (Gamepad.LeftStickRight){
+			}else if (Gamepad.GetInputActive(Gamepad.InputCode.LeftStickRight)){
 				MoveTo(X + 1, Y);
 			}
 		}
