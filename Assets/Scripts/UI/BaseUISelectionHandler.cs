@@ -8,41 +8,36 @@ using Direction = UISelectionInput.Direction;
 using SelectionInput = UISelectionInput.ISelectionInput;
 
 public class BaseUISelectionHandler : BaseInputModule {
-	public bool LoopHorizontally = false;
-	public bool LoopVertically = true;
-	public GameObject FirstToSelect;
+	public SelectionMapping FirstToSelect;
+	public bool StartSelected = false;
 	public float SelectDelay = .75f;
 
 	public UISelectionInput.InputMethods[] selectMethods;
 	public bool Selecting { get { return CurrentlySelected != null; } }
-	public Selectable CurrentlySelected { 
-		get { 
-			return currentIndex > -1 ? 
-				possibleSelectables[currentIndex] :
-				null;
-		}
-	}
 
-	private int currentIndex = -1;
+	public SelectionMapping CurrentlySelected { get; private set; }
+
 	private float delay;
-	private List<Selectable> possibleSelectables = new List<Selectable>();
 	private List<SelectionInput> selectionMethods;
 
 	public override void ActivateModule() {
 		selectionMethods = UISelectionInput.GetSelectionInputs (selectMethods);
 
-		possibleSelectables.AddRange(GetComponentsInChildren<Selectable> (true));
+		if (FirstToSelect == null)
+			FirstToSelect = GetComponentInChildren<SelectionMapping> (true);
 
-		if (FirstToSelect != null && ((currentIndex = possibleSelectables.IndexOf (FirstToSelect.GetComponent<Selectable> ())) > -1)) {
-			ExecuteEvent(ExecuteEvents.selectHandler);
+		if (StartSelected) {
+			CurrentlySelected = FirstToSelect;
+			ExecuteEvent (ExecuteEvents.selectHandler);
 		}
 
 		delay = 0;
 	}
 
 	public override void Process() {
-		delay -= (delay > 0 ? Time.deltaTime : 0);
+		delay = Mathf.Clamp (delay - Time.deltaTime, 0, SelectDelay);
 
+		bool foundInput = false;
 		foreach (SelectionInput selectionMethod in selectionMethods) {
 			if (Selecting) {
 				if (selectionMethod.Submitting)
@@ -53,35 +48,49 @@ public class BaseUISelectionHandler : BaseInputModule {
 
 			Direction direction;
 			bool forceDirection = selectionMethod.GetDirection (Time.deltaTime, out direction);
-			if (direction != Direction.None && (forceDirection || delay <= 0)) {
-				int nextIndex = currentIndex;
+			if (!foundInput && direction != Direction.None && (forceDirection || delay <= 0)) {
+				SelectionMapping next = NextSelection (direction);
+				if (next == null)
+					continue;
 
-				switch (direction) {
-					case Direction.Up:
-						if (nextIndex > 0)
-							nextIndex--;
-						else if (LoopVertically)
-							nextIndex = possibleSelectables.Count - 1;
-						break;
-					case Direction.Down:
-						if (currentIndex < possibleSelectables.Count - 1)
-							nextIndex++;
-						else if (LoopVertically)
-							nextIndex = 0;
-						break;
+				if (!next.Selectable) {
+					SelectionMapping first = next;
+					do {
+						next = NextSelection (next, direction);
+					} while (next != first && next != null && !next.Selectable);
+					if (next == null || next == first)
+						continue;
 				}
 
-				if (nextIndex == currentIndex)
-					continue;
-					
+				foundInput = true;
+
 				if (Selecting)
 					ExecuteEvent (ExecuteEvents.deselectHandler);
-				currentIndex = nextIndex;
+				CurrentlySelected = next;
 				ExecuteEvent (ExecuteEvents.selectHandler);
 
 				delay = SelectDelay;
 			}
 		}
+	}
+
+	protected SelectionMapping NextSelection (Direction direction) { return NextSelection (CurrentlySelected, direction); }
+	protected SelectionMapping NextSelection(SelectionMapping from, Direction direction) {
+		if (from == null)
+			return FirstToSelect;
+
+		switch (direction) {
+			case Direction.Up:
+				return from.UpTarget;
+			case Direction.Left:
+				return from.LeftTarget;
+			case Direction.Down:
+				return from.DownTarget;
+			case Direction.Right:
+				return from.RightTarget;
+		}
+
+		return null;
 	}
 
 	protected void ExecuteEvent<T>(ExecuteEvents.EventFunction<T> handler) where T : IEventSystemHandler {

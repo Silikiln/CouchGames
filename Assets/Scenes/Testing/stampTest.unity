@@ -350,9 +350,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a40ba7c66ec1db42a6797837a00df9a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  LoopHorizontally: 1
-  LoopVertically: 0
-  FirstToSelect: {fileID: 1465691687}
+  FirstToSelect: {fileID: 1465691693}
+  StartSelected: 0
   SelectDelay: 0.75
   selectMethods: 000000000100000002000000
 --- !u!114 &44930467
@@ -1875,6 +1874,7 @@ GameObject:
   - component: {fileID: 238703052}
   - component: {fileID: 238703051}
   - component: {fileID: 238703050}
+  - component: {fileID: 238703054}
   m_Layer: 5
   m_Name: MainMenu
   m_TagString: Untagged
@@ -1997,6 +1997,21 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 238703048}
+--- !u!114 &238703054
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 238703048}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d099b73c121b41248bf4ea407556a2f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  UpTarget: {fileID: 0}
+  LeftTarget: {fileID: 1465691693}
+  DownTarget: {fileID: 0}
+  RightTarget: {fileID: 1465691693}
 --- !u!1 &261843441
 GameObject:
   m_ObjectHideFlags: 0
@@ -10956,6 +10971,7 @@ GameObject:
   - component: {fileID: 1465691691}
   - component: {fileID: 1465691690}
   - component: {fileID: 1465691689}
+  - component: {fileID: 1465691693}
   m_Layer: 5
   m_Name: Replay
   m_TagString: Untagged
@@ -11078,6 +11094,21 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1465691687}
+--- !u!114 &1465691693
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1465691687}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d099b73c121b41248bf4ea407556a2f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  UpTarget: {fileID: 0}
+  LeftTarget: {fileID: 238703054}
+  DownTarget: {fileID: 0}
+  RightTarget: {fileID: 238703054}
 --- !u!1 &1467641346
 GameObject:
   m_ObjectHideFlags: 0
