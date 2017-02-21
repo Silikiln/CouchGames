@@ -1,13 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class StampGhost : StampPlayer {
 
 	public float wallDelay, swingDelay;
-	public TextMesh swingTimeText, wallTimeText;
+	public Text swingTimeText, wallTimeText;
+    public Image swingTimeIcon, wallTimeIcon;
 
-	private float wallTimer, swingTimer;
+    private float wallTimer, swingTimer;
 
 	public override bool IsGhost { get { return true; } }
 	public override bool Highlight { get { return false; } }
@@ -16,11 +18,11 @@ public class StampGhost : StampPlayer {
 	void Update () {
 		if ((wallTimer > 0 ? wallTimer -= Time.deltaTime : wallTimer) <= 0 && Gamepad.GetInputActive(Gamepad.InputCode.X)) {
 			BossWall ();
-			StartCoroutine (CoolDownTracker (wallDelay, wallTimeText));
+			StartCoroutine (CoolDownTracker (wallDelay, wallTimeText, wallTimeIcon));
 		}
 		if ((swingTimer > 0 ? swingTimer -= Time.deltaTime : swingTimer) <= 0 && Gamepad.GetInputActive(Gamepad.InputCode.A)) {
 			GhostSwing ();
-			StartCoroutine (CoolDownTracker (swingDelay, swingTimeText));
+			StartCoroutine (CoolDownTracker (swingDelay, swingTimeText, swingTimeIcon));
 		}
 	}
 
@@ -149,18 +151,20 @@ public class StampGhost : StampPlayer {
 		swingTimer = swingDelay;
 	}
 
-	IEnumerator CoolDownTracker(float duration, TextMesh timerText){
+	IEnumerator CoolDownTracker(float duration, Text timerText, Image timerIcon){
 		float countDownTimer = duration;
-		timerText.text = string.Format("{0:0.0}s", countDownTimer);
+		timerText.text = string.Format("{0}", (int)countDownTimer);
 
 		yield return null;
 		while (countDownTimer > 0)
 		{
 			countDownTimer -= Time.deltaTime;
-			timerText.text = string.Format("{0:0.0}s", countDownTimer);
-
+			timerText.text = string.Format("{0}", (int)countDownTimer + 1);
+            timerIcon.fillAmount = 1 - (countDownTimer / duration);
 			yield return null;
 		}
-		timerText.text = "0s";
-	}
+		timerText.text = "";
+        timerIcon.fillAmount = 1;
+
+    }
 }
