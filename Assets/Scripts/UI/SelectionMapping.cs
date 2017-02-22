@@ -12,5 +12,5 @@ public class SelectionMapping : MonoBehaviour {
 		parent = GetComponent<Selectable> ();
 	}
 
-	public bool Selectable { get { return parent.IsInteractable (); } }
+	public bool Selectable { get { return parent != null && parent.IsInteractable (); } }
 }

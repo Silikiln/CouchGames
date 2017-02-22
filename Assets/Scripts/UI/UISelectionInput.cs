@@ -18,8 +18,8 @@ public class UISelectionInput {
 		GamepadAny
 	}
 
-	public static List<ISelectionInput> GetSelectionInputs(params InputMethods[] methodsToGet) {
-		List<ISelectionInput> result = new List<ISelectionInput> ();
+	public static List<AbstractSelectionInput> GetSelectionInputs(params InputMethods[] methodsToGet) {
+		List<AbstractSelectionInput> result = new List<AbstractSelectionInput> ();
 		foreach (InputMethods method in methodsToGet)
 			switch (method) {
 				case InputMethods.KeyboardWASD:
@@ -35,13 +35,18 @@ public class UISelectionInput {
 		return result;
 	}
 
-	public interface ISelectionInput {
-		bool GetDirection (float delta, out Direction direction);
-		bool Submitting { get; }
-		bool Canceling { get; }
+	public abstract class AbstractSelectionInput {
+		public virtual SelectionMapping GetTarget { get { return null; } }
+		public virtual bool GetDirection (float delta, out Direction direction) {
+			direction = Direction.None;
+			return false;
+		}
+		public virtual bool Targetting { get { return false; } }
+		public virtual bool Submitting { get { return false; } }
+		public virtual bool Canceling { get { return false; } }
 	}
 
-	public class KeyboardWASDSelectionInput : ISelectionInput {
+	public class KeyboardWASDSelectionInput : AbstractSelectionInput {
 		private KeyCode[] keyboardInputs = new KeyCode[] {
 			KeyCode.W,
 			KeyCode.A,
@@ -49,7 +54,7 @@ public class UISelectionInput {
 			KeyCode.D
 		};
 
-		public bool GetDirection(float delta, out Direction direction) {
+		public override bool GetDirection(float delta, out Direction direction) {
 			for (int i = 0; i < keyboardInputs.Length; i++)
 				if (Input.GetKey (keyboardInputs [i])) {
 					direction = (Direction)i;
@@ -59,11 +64,11 @@ public class UISelectionInput {
 			return false;
 		}
 
-		public bool Submitting { get { return Input.GetKeyDown (KeyCode.Space); } }
-		public bool Canceling { get { return Input.GetKeyDown (KeyCode.Escape); } }
+		public override bool Submitting { get { return Input.GetKeyDown (KeyCode.Space); } }
+		public override bool Canceling { get { return Input.GetKeyDown (KeyCode.Escape); } }
 	}
 
-	public class KeyboardArrowSelectionInput : ISelectionInput {
+	public class KeyboardArrowSelectionInput : AbstractSelectionInput {
 		private KeyCode[] keyboardInputs = new KeyCode[] {
 			KeyCode.UpArrow,
 			KeyCode.LeftArrow,
@@ -71,7 +76,7 @@ public class UISelectionInput {
 			KeyCode.RightArrow
 		};
 
-		public bool GetDirection(float delta, out Direction direction) {
+		public override bool GetDirection(float delta, out Direction direction) {
 			for (int i = 0; i < keyboardInputs.Length; i++)
 				if (Input.GetKey (keyboardInputs [i])) {
 					direction = (Direction)i;
@@ -81,11 +86,11 @@ public class UISelectionInput {
 			return false;
 		}
 
-		public bool Submitting { get { return Input.GetKeyDown (KeyCode.Return); } }
-		public bool Canceling { get { return Input.GetKeyDown (KeyCode.Delete); } }
+		public override bool Submitting { get { return Input.GetKeyDown (KeyCode.Return); } }
+		public override bool Canceling { get { return Input.GetKeyDown (KeyCode.Delete); } }
 	}
 
-	public class GamepadAnySelectionInput : ISelectionInput {
+	public class GamepadAnySelectionInput : AbstractSelectionInput {
 		private const float deadzone = .1f;
 
 		private Gamepad.InputCode[] leftStickInputs = new Gamepad.InputCode[] {
@@ -107,7 +112,7 @@ public class UISelectionInput {
 			Gamepad.InputCode.DpadRight
 		};
 
-		public bool GetDirection(float delta, out Direction direction) {
+		public override bool GetDirection(float delta, out Direction direction) {
 			Gamepad.AllGamepads.ForEach (gamepad => gamepad.Update ());
 
 			for (int i = 0; i < rightStickInputs.Length; i++)
@@ -122,7 +127,7 @@ public class UISelectionInput {
 			return false;
 		}
 
-		public bool Submitting { get { return Gamepad.AllGamepads.Any(gamepad => gamepad.GetInputActive(Gamepad.InputCode.A)); } }
-		public bool Canceling { get { return Gamepad.AllGamepads.Any(gamepad => gamepad.GetInputActive(Gamepad.InputCode.B)); } }
+		public override bool Submitting { get { return Gamepad.AllGamepads.Any(gamepad => gamepad.GetInputActive(Gamepad.InputCode.A)); } }
+		public override bool Canceling { get { return Gamepad.AllGamepads.Any(gamepad => gamepad.GetInputActive(Gamepad.InputCode.B)); } }
 	}
 }

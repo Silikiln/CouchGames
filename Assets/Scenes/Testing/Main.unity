@@ -506,8 +506,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   FirstToSelect: {fileID: 418042939}
   StartSelected: 0
+  UseMouse: 1
   SelectDelay: 0.4
-  selectMethods: 010000000000000002000000
+  selectMethods: 000000000100000002000000
 --- !u!1 &694648397
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,15 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 using Direction = UISelectionInput.Direction;
-using SelectionInput = UISelectionInput.ISelectionInput;
+using SelectionInput = UISelectionInput.AbstractSelectionInput;
 
 public class BaseUISelectionHandler : BaseInputModule {
 	public SelectionMapping FirstToSelect;
 	public bool StartSelected = false;
+	public bool UseMouse = true;
 	public float SelectDelay = .75f;
 
 	public UISelectionInput.InputMethods[] selectMethods;
@@ -17,8 +19,13 @@ public class BaseUISelectionHandler : BaseInputModule {
 
 	public SelectionMapping CurrentlySelected { get; private set; }
 
+	public bool IsMouseMoving { get { return currentMousePosition != lastMousePosition; } }
+
+	private bool mouseHovering = false;
 	private float delay;
 	private List<SelectionInput> selectionMethods;
+
+	private Vector3 currentMousePosition = Vector3.zero, lastMousePosition = Vector3.zero;
 
 	public override void ActivateModule() {
 		selectionMethods = UISelectionInput.GetSelectionInputs (selectMethods);
@@ -35,6 +42,9 @@ public class BaseUISelectionHandler : BaseInputModule {
 	}
 
 	public override void Process() {
+		if (UseMouse)
+			HandleMouse ();
+
 		delay = Mathf.Clamp (delay - Time.deltaTime, 0, SelectDelay);
 
 		bool foundInput = false;
@@ -44,6 +54,13 @@ public class BaseUISelectionHandler : BaseInputModule {
 					ExecuteEvent(ExecuteEvents.submitHandler);
 				if (selectionMethod.Canceling)
 					ExecuteEvent (ExecuteEvents.cancelHandler);
+			}
+			if (selectionMethod.Targetting)
+			if (selectionMethod.GetTarget != null) {
+				if (Selecting)
+					ExecuteEvent (ExecuteEvents.deselectHandler);
+				CurrentlySelected = selectionMethod.GetTarget;
+				ExecuteEvent (ExecuteEvents.selectHandler);
 			}
 
 			Direction direction;
@@ -71,6 +88,49 @@ public class BaseUISelectionHandler : BaseInputModule {
 
 				delay = SelectDelay;
 			}
+		}
+	}
+
+	private void HandleMouse() {
+		lastMousePosition = currentMousePosition;
+		currentMousePosition = Input.mousePosition;
+
+		HandleMouseHovering ();
+		HandleMouseSubmit();
+	}
+
+	protected void HandleMouseHovering() {
+		if (!IsMouseMoving)
+			return;
+		PointerEventData pointer = new PointerEventData (eventSystem);
+		pointer.position = (Vector2) currentMousePosition;
+		List<RaycastResult> raycasts = new List<RaycastResult> ();
+		eventSystem.RaycastAll (pointer, raycasts);
+		raycasts = raycasts.FindAll (result => result.gameObject.GetComponent<SelectionMapping> () != null);
+		if (raycasts.Count == 0) {
+			if (mouseHovering) {
+				ExecuteEvent (ExecuteEvents.deselectHandler);
+				CurrentlySelected = null;
+				mouseHovering = false;
+			}
+		} else {
+			RaycastResult best = raycasts [0];
+			for (int i = 1; i < raycasts.Count; i++)
+				if (best.depth < raycasts [i].depth)
+					best = raycasts [i];
+
+			if (Selecting)
+				ExecuteEvent (ExecuteEvents.deselectHandler);
+
+			CurrentlySelected = best.gameObject.GetComponent<SelectionMapping> ();
+			ExecuteEvent (ExecuteEvents.selectHandler);
+			mouseHovering = true;
+		}
+	}
+
+	protected void HandleMouseSubmit() {
+		if (mouseHovering && Input.GetMouseButtonUp(0)) {
+			ExecuteEvent (ExecuteEvents.submitHandler);
 		}
 	}
 

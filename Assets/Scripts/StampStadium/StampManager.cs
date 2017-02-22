@@ -40,7 +40,6 @@ public class StampManager : MonoBehaviour {
 
 	public static void PlayerKilled(StampPlayer player) {
 		ActivePlayers.Remove (player);
-		Debug.Log (ActivePlayers.Count);
 		if (ActivePlayers.Count == 0) {
 			Instance.endScreen.UpdateEnd ("Ghost", new string[0]);
 		}
